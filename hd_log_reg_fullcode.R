@@ -49,5 +49,28 @@ print(df_model.part$aic - df_model$aic) #difference of AIC score
 #validate that the reduced model is statistically siginifcant over the full model
 anova(df_model.part, df_model, test="Chisq")
 
-#
+#ROC and AUC for the partial model
+library(pROC)
+par(pty="s")
+roc(train_df$target, df_model.part$fitted.values, plot=TRUE, legacy.axes=TRUE,
+    col="Red", print.auc = TRUE, print.auc.x=0.35,
+    xlab="False Positive Rate",
+    ylab="True Positive Rate")
 
+#Fiiting the model to test dataset and Confusion Matrix of the fitted model
+df_model_fit <- predict(df_model.part, newdata=test_df, type="response")
+df_model_confmat <- ifelse(df_model_fit >0.5, 1, 0)
+
+library(caret)
+confusionMatrix(factor(df_model_confmat), factor(test_df$target), positive=as.character(1))
+
+#ROC and AUC for the fitted model
+library(ROCR)
+df_prediction <- prediction(df_model_fit, test_df$target)
+df_performance <- performance(df_prediction, measure = "tpr", x.measure="fpr")
+plot(df_performance, col = "Red")+
+  abline(a=0,b=1, col= "Grey")
+
+df_auc <- performance(df_prediction, measure = "auc")
+df_auc <- df_auc@y.values
+df_auc
