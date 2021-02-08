@@ -26,13 +26,17 @@ df$thal <- as.factor(df$thal)
 library(Amelia)
 missmap(df, main = "Missing Data vs Observed")
 
+#check the ratio of reponse variable and see if it requires to rebalance
+library(plyr)
+count(df,vars="target")
+
 ##----------------------##
 ##  DATA VISUALIZATION  ##
 ##----------------------##
 
 #Train,Test Split
 library(caTools)
-set.seed(1234)
+set.seed(123)
 sample <- sample.split(df, SplitRatio = 0.75) #Randomly set identifier
 train_df <- subset(df, sample==TRUE) #Train dataset
 test_df  <- subset(df, sample==FALSE) #Test dataset
@@ -68,9 +72,11 @@ confusionMatrix(factor(df_model_confmat), factor(test_df$target), positive=as.ch
 library(ROCR)
 df_prediction <- prediction(df_model_fit, test_df$target)
 df_performance <- performance(df_prediction, measure = "tpr", x.measure="fpr")
-plot(df_performance, col = "Red")+
+plot(df_performance, col = "Red", 
+     main = "ROC Curve",
+     xlab="False Postiive Rate", ylab="True Positive Rate")+
   abline(a=0,b=1, col= "Grey")
 
 df_auc <- performance(df_prediction, measure = "auc")
 df_auc <- df_auc@y.values
-df_auc
+print(paste("AUC Score: ", lapply(df_auc,round,3)))
