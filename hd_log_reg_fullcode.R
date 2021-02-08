@@ -30,10 +30,6 @@ missmap(df, main = "Missing Data vs Observed")
 library(plyr)
 count(df,vars="target")
 
-##----------------------##
-##  DATA VISUALIZATION  ##
-##----------------------##
-
 #Train,Test Split
 library(caTools)
 set.seed(123)
