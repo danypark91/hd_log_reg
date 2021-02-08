@@ -13,9 +13,10 @@ This project is to apply logistic regression to the dataset of heart disease pat
 - library(caTools)
 - library(pROC)
 - library(ROCR)
+- library(plyr)
 
-### Installation of R Libraries
-`rpack <- c("MASS", "caret", "Amelia", "caTools", "pROC", "ROCR")`
+### Installation of R packages
+`rpack <- c("MASS", "caret", "Amelia", "caTools", "pROC", "ROCR", "plyr")`
 
 `install.packages(rpack)`
 
