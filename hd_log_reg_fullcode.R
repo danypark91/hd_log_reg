@@ -30,6 +30,36 @@ missmap(df, main = "Missing Data vs Observed")
 library(plyr)
 count(df,vars="target")
 
+#Data Visualization
+library(GGally)
+library(ggsci)
+
+#1. Count of Target variable
+ggplot(df, aes(factor(target), fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, color="black")+
+  ggtitle("Count of Target")+xlab("Target")+ylab("Count")+labs(fill="Target")+
+  theme_minimal()+
+  scale_fill_npg()
+
+#2. Barplot of Gender broken down by Target
+ggplot(df, aes(sex, fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
+  ggtitle("Genderof Patient, Broken down by Target")+xlab("Gender")+ylab("Proportion")+labs(fill="Target")+
+  theme_minimal()+
+  scale_fill_npg()
+
+#3. Barplot for categorical variables broken down by Target
+library(cowplot)
+
+#4. Age distribution by Target
+ggplot(df, aes(factor(target), age, fill=sex))+
+  geom_boxplot(width=0.5)+
+  ggtitle("Distribution of Age, by Target")+xlab("Target")+ylab("Age")+labs(fill="Gender")+
+  theme_minimal()+
+  scale_fill_npg()
+
+
+
 #Train,Test Split
 library(caTools)
 set.seed(123)
