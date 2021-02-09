@@ -44,12 +44,22 @@ ggplot(df, aes(factor(target), fill=factor(target)))+
 #2. Barplot of Gender broken down by Target
 ggplot(df, aes(sex, fill=factor(target)))+
   geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
-  ggtitle("Genderof Patient, Broken down by Target")+xlab("Gender")+ylab("Proportion")+labs(fill="Target")+
+  ggtitle("Genderof Patient, Broken down by Target")+xlab("Gender")+ylab("Count")+labs(fill="Target")+
   theme_minimal()+
   scale_fill_npg()
 
 #3. Barplot for categorical variables broken down by Target
-library(cowplot)
+cat_var <- c("sex", "cp", "fbs", "restecg", "exang", "slope", "thal", "target")
+cat_df <- df[cat_var]
+plt_list <- list()
+
+for(i in 1:7){
+  print(ggplot(cat_df, aes(cat_df[,i], fill=factor(target)))+
+    geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
+    xlab(colnames(cat_df)[i])+ylab("Count")+labs(fill="Target")+
+    theme_minimal()+
+    scale_fill_npg())
+}
 
 #4. Age distribution by Target
 ggplot(df, aes(factor(target), age, fill=sex))+
@@ -57,7 +67,6 @@ ggplot(df, aes(factor(target), age, fill=sex))+
   ggtitle("Distribution of Age, by Target")+xlab("Target")+ylab("Age")+labs(fill="Gender")+
   theme_minimal()+
   scale_fill_npg()
-
 
 
 #Train,Test Split
