@@ -51,10 +51,9 @@ ggplot(df, aes(sex, fill=factor(target)))+
 #3. Barplot for categorical variables broken down by Target
 cat_var <- c("sex", "cp", "fbs", "restecg", "exang", "slope", "thal", "target")
 cat_df <- df[cat_var]
-plt_list <- list()
 
 for(i in 1:7){
-  print(ggplot(cat_df, aes(cat_df[,i], fill=factor(target)))+
+  print(ggplot(cat_df, aes(x=cat_df[,i], fill=factor(target)))+
     geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
     xlab(colnames(cat_df)[i])+ylab("Count")+labs(fill="Target")+
     theme_minimal()+
@@ -62,12 +61,42 @@ for(i in 1:7){
 }
 
 #4. Age distribution by Target
-ggplot(df, aes(factor(target), age, fill=sex))+
+mp <- ggplot(df, aes(sex, age, fill=factor(target)))+
   geom_boxplot(width=0.5)+
-  ggtitle("Distribution of Age, by Target")+xlab("Target")+ylab("Age")+labs(fill="Gender")+
-  theme_minimal()+
+  ggtitle("Distribution of Age, by Gender", subtitle="")+xlab("Gender")+ylab("Age")+labs(fill="Target")+
+  theme_bw()+
   scale_fill_npg()
+#4-1. subplots
+xplot <- ggplot(df, aes(sex, fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, alpha=0.4,color="black", position=position_dodge())+
+  labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+yplot <- ggplot(df, aes(age, fill=factor(target)))+
+  geom_density(alpha=0.4)+
+  labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()+
+  rotate()
+#4-2. combination
+library(ggpubr)
+ggarrange(xplot, NULL, mp, yplot,
+          ncol =2, nrow=2, align = "hv",
+          widths= c(3,1), heights = c(1,2),
+          common.legend= TRUE)
 
+#5. Boxplot for continuous variables broken down by Target
+cont_var <- c("age", "trestbps", "chol", "thalach", "oldpeak", "target")
+cont_df <- df[cont_var]
+
+for(i in 1:5){
+  print(ggplot(cont_df, aes(x=cont_df[,i], y=factor(target), fill=factor(target)))+
+          geom_boxplot(width=0.5)+
+          geom_point(position=position_dodge(width=0.5), alpha=0.2)+
+          xlab(colnames(cont_df)[i])+ylab("Target")+labs(fill="Target")+
+          theme_minimal()+
+          scale_fill_npg())
+}
 
 #Train,Test Split
 library(caTools)
