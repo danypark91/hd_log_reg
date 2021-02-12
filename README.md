@@ -17,9 +17,10 @@ This project is to apply logistic regression to the dataset of heart disease pat
 - library(GGally)
 - library(ggsci)
 - library(cowplot)
+- library(ggpubr)
 
 ### Installation of R packages
-`rpack <- c("MASS", "caret", "Amelia", "caTools", "pROC", "ROCR", "plyr", "GGally", "ggsci", "cowplot")`
+`rpack <- c("MASS", "caret", "Amelia", "caTools", "pROC", "ROCR", "plyr", "GGally", "ggsci", "cowplot", "ggpubr")`
 
 `install.packages(rpack)`
 
