@@ -7,6 +7,7 @@ output: rmarkdown::github_document
 
 ## 1. Overview of Logistic Regression
 Consider a dataset with the response variable(Y) falls into two categories. Logistic regression is a statistical model that focuses on the probability of each Y variable's class given values of the independent variables(X). Since the model is based on the probability, at any given X value, the result has to fall between 0 and 1. Mathematically speaking, 0 ≤ P(X) ≤ 1. The value of P(X) should always produce the outputs within the range. 
+
 ![Logistic Regression](https://www.dotnetlovers.com/Images/LogisticRegressionFormula1020201890212AM.png)
 
 The regression is fitted using the maximum likelihood method because of its statistical properties. The method estimates the model's coefficients such that the predicted probability corresponds as closely as possible to the individual's observations. In other words, predicted β0 and β1 are found such that plugging these estimates into p(X), yields a number close to one for all individuals who defaulted, and a number close to zero for all individuals who did not¹.
