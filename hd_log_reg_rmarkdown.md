@@ -3,6 +3,11 @@ Heart Disease UCI - Logistic Regression
 Dany Park
 11/02/2021
 
+# Logistic Regression and Prediction of Heart Disease
+
+The project is to apply logistic regression to the heart disease
+datatset and apply the fitted model to predict the potential patient.
+
 ## 1. Overview of Logistic Regression
 
 Consider a dataset with the response variable(Y) falls into two
@@ -11,7 +16,9 @@ the probability of each Y variable’s class given values of the
 independent variables(X). Since the model is based on the probability,
 at any given X value, the result has to fall between 0 and 1.
 Mathematically speaking, 0 ≤ P(X) ≤ 1. The value of P(X) should always
-produce the outputs within the range. ![Logistic
+produce the outputs within the range.
+
+![Logistic
 Regression](https://www.dotnetlovers.com/Images/LogisticRegressionFormula1020201890212AM.png)
 
 The regression is fitted using the maximum likelihood method because of
@@ -105,9 +112,10 @@ head(df,5)
 
 The dataset has total of 14 attributes and 303 incidences. Of those,
 `sex`, `cp`, `fbs`, `restecg`, `exang`, `slope`, `thal` and `target` are
-the categorical variable. The rest, `age`, `trestbps`, `chol`, `thalach`
-and `oldpeak`, are the continuous variable. However, before we proceed,
-there’s an erronous attribute: `ï..age`. It is corrected to `age`.
+the characterized as categorical variable. The rest, `age`, `trestbps`,
+`chol`, `thalach` and `oldpeak`, are the continuous variable. However,
+before we proceed, there’s an erronous attribute: `ï..age`. It is
+corrected to `age`.
 
 ``` r
 #change erronous attribute name:  ï..age
@@ -127,6 +135,14 @@ head(df,5)
     ## 3      1
     ## 4      1
     ## 5      1
+
+Most of the time, the categorical variable in the dataframe requires to
+be coverted to the factor type in Rstudio. Initially, all the variables
+were categorized as integer. Before analyze the data, categorical
+variables must be converted from int to factor. The code `as.factor` is
+used to successfully convert. As shown below, the result between the
+first `str` and the second run are different. In fact, the second `str`
+overrided the type accordingly.
 
 ``` r
 #check the type of each attribute and change to factor or int
@@ -157,7 +173,31 @@ df$restecg <- as.factor(df$restecg)
 df$exang <- as.factor(df$exang)
 df$slope <- as.factor(df$slope)
 df$thal <- as.factor(df$thal)
+
+str(df) #re-run
 ```
+
+    ## 'data.frame':    303 obs. of  14 variables:
+    ##  $ age     : int  63 37 41 56 57 57 56 44 52 57 ...
+    ##  $ sex     : Factor w/ 2 levels "0","1": 2 2 1 2 1 2 1 2 2 2 ...
+    ##  $ cp      : Factor w/ 4 levels "0","1","2","3": 4 3 2 2 1 1 2 2 3 3 ...
+    ##  $ trestbps: int  145 130 130 120 120 140 140 120 172 150 ...
+    ##  $ chol    : int  233 250 204 236 354 192 294 263 199 168 ...
+    ##  $ fbs     : Factor w/ 2 levels "0","1": 2 1 1 1 1 1 1 1 2 1 ...
+    ##  $ restecg : Factor w/ 3 levels "0","1","2": 1 2 1 2 2 2 1 2 2 2 ...
+    ##  $ thalach : int  150 187 172 178 163 148 153 173 162 174 ...
+    ##  $ exang   : Factor w/ 2 levels "0","1": 1 1 1 1 2 1 1 1 1 1 ...
+    ##  $ oldpeak : num  2.3 3.5 1.4 0.8 0.6 0.4 1.3 0 0.5 1.6 ...
+    ##  $ slope   : Factor w/ 3 levels "0","1","2": 1 1 3 3 3 2 2 3 3 3 ...
+    ##  $ ca      : int  0 0 0 0 0 0 0 0 0 0 ...
+    ##  $ thal    : Factor w/ 4 levels "0","1","2","3": 2 3 3 3 3 2 3 4 4 3 ...
+    ##  $ target  : int  1 1 1 1 1 1 1 1 1 1 ...
+
+One of the most important step in data analysis is dealing with the
+missing data. Usually, the complete dataset doesn’t take place in the
+industry level. The code `missmap` is the perfect tool to visualize the
+missing data in each attribute. Luckily, the graph suggests that there
+isn’t any missing data for this dataframe.
 
 ``` r
 #check for any missing data
@@ -188,3 +228,31 @@ count(df,vars="target")
     ##   target freq
     ## 1      0  138
     ## 2      1  165
+
+## 3. Data Visualization
+
+``` r
+#Data Visualization
+library(GGally)
+```
+
+    ## Loading required package: ggplot2
+
+    ## Registered S3 method overwritten by 'GGally':
+    ##   method from   
+    ##   +.gg   ggplot2
+
+``` r
+library(ggsci)
+```
+
+``` r
+#1. Count of Target variable
+ggplot(df, aes(factor(target), fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, color="black")+
+  ggtitle("Count of Target")+xlab("Target")+ylab("Count")+labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+```
+
+![](hd_log_reg_rmarkdown_files/figure-gfm/Frequency%20of%20Target-1.png)<!-- -->

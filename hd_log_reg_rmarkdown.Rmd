@@ -5,6 +5,9 @@ date: "11/02/2021"
 output: rmarkdown::github_document
 ---
 
+# Logistic Regression and Prediction of Heart Disease
+The project is to apply logistic regression to the heart disease datatset and apply the fitted model to predict the potential patient.
+
 ## 1. Overview of Logistic Regression
 Consider a dataset with the response variable(Y) falls into two categories. Logistic regression is a statistical model that focuses on the probability of each Y variable's class given values of the independent variables(X). Since the model is based on the probability, at any given X value, the result has to fall between 0 and 1. Mathematically speaking, 0 ≤ P(X) ≤ 1. The value of P(X) should always produce the outputs within the range. 
 
@@ -39,15 +42,13 @@ df<-read.csv("heart.csv", header =TRUE)
 summary(df)
 head(df,5)
 ```
-The dataset has total of 14 attributes and 303 incidences. Of those, `sex`, `cp`, `fbs`, `restecg`, `exang`, `slope`, `thal` and `target` are the categorical variable. The rest, `age`, `trestbps`, `chol`, `thalach` and `oldpeak`, are the continuous variable. However, before we proceed, there's an erronous attribute: `ï..age`. It is corrected to `age`. 
-
+The dataset has total of 14 attributes and 303 incidences. Of those, `sex`, `cp`, `fbs`, `restecg`, `exang`, `slope`, `thal` and `target` are the characterized as categorical variable. The rest, `age`, `trestbps`, `chol`, `thalach` and `oldpeak`, are the continuous variable. However, before we proceed, there's an erronous attribute: `ï..age`. It is corrected to `age`. 
 ```{r Attribute name change, echo=TRUE}
 #change erronous attribute name:  ï..age
 colnames(df)[colnames(df)=='ï..age'] <-'age'
 head(df,5)
-
 ```
-
+Most of the time, the categorical variable in the dataframe requires to be coverted to the factor type in Rstudio. Initially, all the variables were categorized as integer. Before analyze the data, categorical variables must be converted from int to factor. The code `as.factor` is used to successfully convert. As shown below, the result between the first `str` and the second run are different. In fact, the second `str` overrided the type accordingly.
 ```{r Change of attribute type, echo=TRUE}
 #check the type of each attribute and change to factor or int
 str(df)
@@ -59,13 +60,14 @@ df$restecg <- as.factor(df$restecg)
 df$exang <- as.factor(df$exang)
 df$slope <- as.factor(df$slope)
 df$thal <- as.factor(df$thal)
-```
 
+str(df) #re-run
+```
+One of the most important step in data analysis is dealing with the missing data. Usually, the complete dataset doesn't take place in the industry level. The code `missmap` is the perfect tool to visualize the missing data in each attribute. Luckily, the graph suggests that there isn't any missing data for this dataframe. 
 ```{r Missmap, echo=TRUE}
 #check for any missing data
 library(Amelia)
 missmap(df, main = "Missing Data vs Observed")
-
 ```
 
 ```{r Count each categorical value, echo=TRUE}
@@ -74,6 +76,22 @@ library(plyr)
 count(df,vars="target")
 ```
 
+## 3. Data Visualization
+
+```{r Data Visualization Package,echo=TRUE}
+#Data Visualization
+library(GGally)
+library(ggsci)
+```
+
+```{r Frequency of Target, echo=TRUE, fig.height=5, fig.width=4}
+#1. Count of Target variable
+ggplot(df, aes(factor(target), fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, color="black")+
+  ggtitle("Count of Target")+xlab("Target")+ylab("Count")+labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+```
 
 
 
