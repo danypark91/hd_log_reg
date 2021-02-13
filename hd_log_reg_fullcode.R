@@ -38,14 +38,14 @@ library(ggsci)
 ggplot(df, aes(factor(target), fill=factor(target)))+
   geom_bar(stat="count", width=0.5, color="black")+
   ggtitle("Count of Target")+xlab("Target")+ylab("Count")+labs(fill="Target")+
-  theme_minimal()+
+  theme_bw()+
   scale_fill_npg()
 
 #2. Barplot of Gender broken down by Target
 ggplot(df, aes(sex, fill=factor(target)))+
   geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
-  ggtitle("Genderof Patient, Broken down by Target")+xlab("Gender")+ylab("Count")+labs(fill="Target")+
-  theme_minimal()+
+  ggtitle("Gender of Patient, Broken by Target")+xlab("Gender")+ylab("Count")+labs(fill="Target")+
+  theme_bw()+
   scale_fill_npg()
 
 #3. Barplot for categorical variables broken down by Target
@@ -55,8 +55,9 @@ cat_df <- df[cat_var]
 for(i in 1:7){
   print(ggplot(cat_df, aes(x=cat_df[,i], fill=factor(target)))+
     geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
+    ggtitle(paste(colnames(cat_df)[i], ": Broken by Target"))+
     xlab(colnames(cat_df)[i])+ylab("Count")+labs(fill="Target")+
-    theme_minimal()+
+    theme_bw()+
     scale_fill_npg())
 }
 
@@ -93,6 +94,7 @@ for(i in 1:5){
   print(ggplot(cont_df, aes(x=cont_df[,i], y=factor(target), fill=factor(target)))+
           geom_boxplot(width=0.5)+
           geom_point(position=position_dodge(width=0.5), alpha=0.2)+
+          ggtitle(paste(colnames(cont_df)[i], ": Broken by Target"))+
           xlab(colnames(cont_df)[i])+ylab("Target")+labs(fill="Target")+
           theme_minimal()+
           scale_fill_npg())
