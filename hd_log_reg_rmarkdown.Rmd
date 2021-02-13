@@ -69,7 +69,7 @@ One of the most important step in data analysis is dealing with the missing data
 library(Amelia)
 missmap(df, main = "Missing Data vs Observed")
 ```
-
+The final step before analyze the data is checking the ratio of the categories in the response variable. Resampling method can resolve the high inbalance between the classification. However, below result provides that the imbalance isn't significant enough to apply under/over-sampling algorithm.
 ```{r Count each categorical value, echo=TRUE}
 #check the ratio of reponse variable and see if it requires to rebalance
 library(plyr)

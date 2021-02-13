@@ -217,7 +217,12 @@ library(Amelia)
 missmap(df, main = "Missing Data vs Observed")
 ```
 
-![](hd_log_reg_rmarkdown_files/figure-gfm/Missmap-1.png)<!-- -->
+![](hd_log_reg_rmarkdown_files/figure-gfm/Missmap-1.png)<!-- --> The
+final step before analyze the data is checking the ratio of the
+categories in the response variable. Resampling method can resolve the
+high inbalance between the classification. However, below result
+provides that the imbalance isn’t significant enough to apply
+under/over-sampling algorithm.
 
 ``` r
 #check the ratio of reponse variable and see if it requires to rebalance
