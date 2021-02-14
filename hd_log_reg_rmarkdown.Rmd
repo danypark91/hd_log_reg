@@ -69,6 +69,7 @@ One of the most important step in data analysis is dealing with the missing data
 library(Amelia)
 missmap(df, main = "Missing Data vs Observed")
 ```
+
 The final step before analyze the data is checking the ratio of the categories in the response variable. Resampling method can resolve the high inbalance between the classification. However, below result provides that the imbalance isn't significant enough to apply under/over-sampling algorithm.
 ```{r Count each categorical value, echo=TRUE}
 #check the ratio of reponse variable and see if it requires to rebalance
@@ -77,7 +78,7 @@ count(df,vars="target")
 ```
 
 ## 3. Data Visualization
-
+Before 
 ```{r Data Visualization Package,echo=TRUE}
 #Data Visualization
 library(GGally)
@@ -93,6 +94,124 @@ ggplot(df, aes(factor(target), fill=factor(target)))+
   scale_fill_npg()
 ```
 
+```{r Frequency of Gender broken by Target, echo=TRUE, fig.height=5, fig.width=6}
+#2. Barplot of Gender broken down by Target
+ggplot(df, aes(sex, fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
+  ggtitle("Gender of Patient, Broken by Target")+xlab("Gender")+ylab("Count")+labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+```
+
+```{r For Loop Barplot of Categorical Variables, echo=TRUE, fig.height=5, fig.width=6}
+#3. Barplot for categorical variables broken down by Target
+cat_var <- c("sex", "cp", "fbs", "restecg", "exang", "slope", "thal", "target")
+cat_df <- df[cat_var]
+
+for(i in 1:7){
+  print(ggplot(cat_df, aes(x=cat_df[,i], fill=factor(target)))+
+    geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
+    ggtitle(paste(colnames(cat_df)[i], ": Broken by Target"))+
+    xlab(colnames(cat_df)[i])+ylab("Count")+labs(fill="Target")+
+    theme_bw()+
+    scale_fill_npg())
+}
+```
+
+```{r Boxplot of Age broken by Target, echo=TRUE}
+library(ggpubr)
+#4. Age distribution by Target
+mp <- ggplot(df, aes(sex, age, fill=factor(target)))+
+  geom_boxplot(width=0.5)+
+  ggtitle("Distribution of Age, by Gender", subtitle="")+xlab("Gender")+ylab("Age")+labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+#4-1. subplots
+xplot <- ggplot(df, aes(sex, fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, alpha=0.4,color="black", position=position_dodge())+
+  labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+yplot <- ggplot(df, aes(age, fill=factor(target)))+
+  geom_density(alpha=0.4)+
+  labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()+
+  rotate()
+#4-2. combination
+library(ggpubr)
+ggarrange(xplot, NULL, mp, yplot,
+          ncol =2, nrow=2, align = "hv",
+          widths= c(3,1), heights = c(1,2),
+          common.legend= TRUE)
+```
+
+```{r For Loop Boxplot of Continuous Variables, echo=TRUE}
+#5. Boxplot for continuous variables broken down by Target
+cont_var <- c("age", "trestbps", "chol", "thalach", "oldpeak", "target")
+cont_df <- df[cont_var]
+
+for(i in 1:5){
+  print(ggplot(cont_df, aes(x=cont_df[,i], y=factor(target), fill=factor(target)))+
+          geom_boxplot(width=0.5)+
+          geom_point(position=position_dodge(width=0.5), alpha=0.2)+
+          ggtitle(paste(colnames(cont_df)[i], ": Broken by Target"))+
+          xlab(colnames(cont_df)[i])+ylab("Target")+labs(fill="Target")+
+          theme_bw()+
+          scale_fill_npg())
+}
+```
+
+## 4. Logistic Regression
+In the beginning of this notebook, the concept of the logistic regression was studied. Unlike the linear regression, the classification method apply accuracy, precision, F1 score and related indicators to measure the validty of the model. Splitting the entire dataframe between the train and test sets are essential to avoid biased results. The `train_df` is initially used to study and determine the appropriate model for the dataframe.
+
+```{r Train-Test Split, echo=TRUE}
+#Train,Test Split
+library(caTools)
+set.seed(1234)
+sample <- sample.split(df, SplitRatio = 0.75) #Randomly set identifier
+train_df <- subset(df, sample==TRUE) #Train dataset
+test_df  <- subset(df, sample==FALSE) #Test dataset
+```
 
 
+
+```{r Fitting Train_df, echo=TRUE}
+#Logistic Regression: full fitting with train dataset
+df_model <- glm(target~., data=train_df, family=binomial(link="logit"))
+summary(df_model)
+```
+
+```{r Fitting only significant variables, echo=TRUE}
+#create a model with the statistically siginifcant variables only
+df_model.part <- glm(target~sex+cp+trestbps+thalach+oldpeak+ca, data=train_df, family=binomial(link="logit"))
+summary(df_model.part)
+print(df_model.part$aic - df_model$aic) #difference of AIC score
+```
+
+
+```{r ANOVA test for two diffent models, echo=TRUE}
+#validate that the reduced model is statistically siginifcant over the full model
+anova(df_model.part, df_model, test="Chisq")
+```
+
+
+```{r ROC and AUC partial model, echo=TRUE}
+#ROC and AUC for the partial model
+library(pROC)
+par(pty="s")
+roc(train_df$target, df_model.part$fitted.values, plot=TRUE, legacy.axes=TRUE,
+    col="Red", print.auc = TRUE, print.auc.x=0.35,
+    xlab="False Positive Rate",
+    ylab="True Positive Rate")
+```
+
+```{r Confusion Matrix, echo=TRUE}
+#Fiiting the model to test dataset and Confusion Matrix of the fitted model
+df_model_fit <- predict(df_model.part, newdata=test_df, type="response")
+df_model_confmat <- ifelse(df_model_fit >0.5, 1, 0)
+
+library(caret)
+confusionMatrix(factor(df_model_confmat), factor(test_df$target), positive=as.character(1))
+```
 

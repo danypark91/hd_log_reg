@@ -217,8 +217,9 @@ library(Amelia)
 missmap(df, main = "Missing Data vs Observed")
 ```
 
-![](hd_log_reg_rmarkdown_files/figure-gfm/Missmap-1.png)<!-- --> The
-final step before analyze the data is checking the ratio of the
+![](hd_log_reg_rmarkdown_files/figure-gfm/Missmap-1.png)<!-- -->
+
+The final step before analyze the data is checking the ratio of the
 categories in the response variable. Resampling method can resolve the
 high inbalance between the classification. However, below result
 provides that the imbalance isn’t significant enough to apply
@@ -235,6 +236,8 @@ count(df,vars="target")
     ## 2      1  165
 
 ## 3. Data Visualization
+
+Before
 
 ``` r
 #Data Visualization
@@ -261,3 +264,292 @@ ggplot(df, aes(factor(target), fill=factor(target)))+
 ```
 
 ![](hd_log_reg_rmarkdown_files/figure-gfm/Frequency%20of%20Target-1.png)<!-- -->
+
+``` r
+#2. Barplot of Gender broken down by Target
+ggplot(df, aes(sex, fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
+  ggtitle("Gender of Patient, Broken by Target")+xlab("Gender")+ylab("Count")+labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+```
+
+![](hd_log_reg_rmarkdown_files/figure-gfm/Frequency%20of%20Gender%20broken%20by%20Target-1.png)<!-- -->
+
+``` r
+#3. Barplot for categorical variables broken down by Target
+cat_var <- c("sex", "cp", "fbs", "restecg", "exang", "slope", "thal", "target")
+cat_df <- df[cat_var]
+
+for(i in 1:7){
+  print(ggplot(cat_df, aes(x=cat_df[,i], fill=factor(target)))+
+    geom_bar(stat="count", width=0.5, color="black", position=position_dodge())+
+    ggtitle(paste(colnames(cat_df)[i], ": Broken by Target"))+
+    xlab(colnames(cat_df)[i])+ylab("Count")+labs(fill="Target")+
+    theme_bw()+
+    scale_fill_npg())
+}
+```
+
+![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Barplot%20of%20Categorical%20Variables-1.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Barplot%20of%20Categorical%20Variables-2.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Barplot%20of%20Categorical%20Variables-3.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Barplot%20of%20Categorical%20Variables-4.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Barplot%20of%20Categorical%20Variables-5.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Barplot%20of%20Categorical%20Variables-6.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Barplot%20of%20Categorical%20Variables-7.png)<!-- -->
+
+``` r
+library(ggpubr)
+```
+
+    ## 
+    ## Attaching package: 'ggpubr'
+
+    ## The following object is masked from 'package:plyr':
+    ## 
+    ##     mutate
+
+``` r
+#4. Age distribution by Target
+mp <- ggplot(df, aes(sex, age, fill=factor(target)))+
+  geom_boxplot(width=0.5)+
+  ggtitle("Distribution of Age, by Gender", subtitle="")+xlab("Gender")+ylab("Age")+labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+#4-1. subplots
+xplot <- ggplot(df, aes(sex, fill=factor(target)))+
+  geom_bar(stat="count", width=0.5, alpha=0.4,color="black", position=position_dodge())+
+  labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()
+yplot <- ggplot(df, aes(age, fill=factor(target)))+
+  geom_density(alpha=0.4)+
+  labs(fill="Target")+
+  theme_bw()+
+  scale_fill_npg()+
+  rotate()
+#4-2. combination
+library(ggpubr)
+ggarrange(xplot, NULL, mp, yplot,
+          ncol =2, nrow=2, align = "hv",
+          widths= c(3,1), heights = c(1,2),
+          common.legend= TRUE)
+```
+
+![](hd_log_reg_rmarkdown_files/figure-gfm/Boxplot%20of%20Age%20broken%20by%20Target-1.png)<!-- -->
+
+``` r
+#5. Boxplot for continuous variables broken down by Target
+cont_var <- c("age", "trestbps", "chol", "thalach", "oldpeak", "target")
+cont_df <- df[cont_var]
+
+for(i in 1:5){
+  print(ggplot(cont_df, aes(x=cont_df[,i], y=factor(target), fill=factor(target)))+
+          geom_boxplot(width=0.5)+
+          geom_point(position=position_dodge(width=0.5), alpha=0.2)+
+          ggtitle(paste(colnames(cont_df)[i], ": Broken by Target"))+
+          xlab(colnames(cont_df)[i])+ylab("Target")+labs(fill="Target")+
+          theme_bw()+
+          scale_fill_npg())
+}
+```
+
+![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Boxplot%20of%20Continuous%20Variables-1.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Boxplot%20of%20Continuous%20Variables-2.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Boxplot%20of%20Continuous%20Variables-3.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Boxplot%20of%20Continuous%20Variables-4.png)<!-- -->![](hd_log_reg_rmarkdown_files/figure-gfm/For%20Loop%20Boxplot%20of%20Continuous%20Variables-5.png)<!-- -->
+
+## 4. Logistic Regression
+
+In the beginning of this notebook, the concept of the logistic
+regression was studied. Unlike the linear regression, the classification
+method apply accuracy, precision, F1 score and related indicators to
+measure the validty of the model. Splitting the entire dataframe between
+the train and test sets are essential to avoid biased results. The
+`train_df` is initially used to study and determine the appropriate
+model for the dataframe.
+
+``` r
+#Train,Test Split
+library(caTools)
+set.seed(1234)
+sample <- sample.split(df, SplitRatio = 0.75) #Randomly set identifier
+train_df <- subset(df, sample==TRUE) #Train dataset
+test_df  <- subset(df, sample==FALSE) #Test dataset
+```
+
+``` r
+#Logistic Regression: full fitting with train dataset
+df_model <- glm(target~., data=train_df, family=binomial(link="logit"))
+summary(df_model)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = target ~ ., family = binomial(link = "logit"), 
+    ##     data = train_df)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -2.7487  -0.2894   0.1013   0.4459   2.0476  
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)  7.986e-01  4.389e+00   0.182 0.855602    
+    ## age          1.026e-02  2.876e-02   0.357 0.721248    
+    ## sex1        -2.079e+00  6.880e-01  -3.021 0.002516 ** 
+    ## cp1          1.189e+00  7.134e-01   1.667 0.095471 .  
+    ## cp2          2.202e+00  6.491e-01   3.392 0.000693 ***
+    ## cp3          2.087e+00  8.327e-01   2.507 0.012184 *  
+    ## trestbps    -2.364e-02  1.396e-02  -1.693 0.090431 .  
+    ## chol        -7.693e-03  4.749e-03  -1.620 0.105270    
+    ## fbs1        -3.429e-01  7.214e-01  -0.475 0.634565    
+    ## restecg1    -3.863e-01  4.672e-01  -0.827 0.408285    
+    ## restecg2    -1.342e+01  1.263e+03  -0.011 0.991522    
+    ## thalach      3.363e-02  1.444e-02   2.329 0.019863 *  
+    ## exang1      -4.884e-01  5.446e-01  -0.897 0.369839    
+    ## oldpeak     -4.963e-01  2.844e-01  -1.745 0.080988 .  
+    ## slope1      -1.056e+00  9.937e-01  -1.062 0.288068    
+    ## slope2       1.409e-01  1.109e+00   0.127 0.898965    
+    ## ca          -1.477e+00  3.320e-01  -4.448 8.67e-06 ***
+    ## thal1        2.198e+00  3.281e+00   0.670 0.502842    
+    ## thal2        1.906e+00  3.191e+00   0.597 0.550204    
+    ## thal3        4.813e-01  3.206e+00   0.150 0.880662    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 299.16  on 216  degrees of freedom
+    ## Residual deviance: 131.97  on 197  degrees of freedom
+    ## AIC: 171.97
+    ## 
+    ## Number of Fisher Scoring iterations: 15
+
+``` r
+#create a model with the statistically siginifcant variables only
+df_model.part <- glm(target~sex+cp+trestbps+thalach+oldpeak+ca, data=train_df, family=binomial(link="logit"))
+summary(df_model.part)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = target ~ sex + cp + trestbps + thalach + oldpeak + 
+    ##     ca, family = binomial(link = "logit"), data = train_df)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -2.3237  -0.3944   0.1722   0.5425   2.0476  
+    ## 
+    ## Coefficients:
+    ##             Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) -0.81746    2.26757  -0.361 0.718471    
+    ## sex1        -2.07054    0.50221  -4.123 3.74e-05 ***
+    ## cp1          1.72775    0.63360   2.727 0.006393 ** 
+    ## cp2          2.19004    0.53253   4.113 3.91e-05 ***
+    ## cp3          2.57576    0.75145   3.428 0.000609 ***
+    ## trestbps    -0.02275    0.01267  -1.796 0.072536 .  
+    ## thalach      0.03790    0.01124   3.371 0.000749 ***
+    ## oldpeak     -0.73794    0.23016  -3.206 0.001345 ** 
+    ## ca          -1.15836    0.26687  -4.341 1.42e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 299.16  on 216  degrees of freedom
+    ## Residual deviance: 153.89  on 208  degrees of freedom
+    ## AIC: 171.89
+    ## 
+    ## Number of Fisher Scoring iterations: 6
+
+``` r
+print(df_model.part$aic - df_model$aic) #difference of AIC score
+```
+
+    ## [1] -0.07491292
+
+``` r
+#validate that the reduced model is statistically siginifcant over the full model
+anova(df_model.part, df_model, test="Chisq")
+```
+
+    ## Analysis of Deviance Table
+    ## 
+    ## Model 1: target ~ sex + cp + trestbps + thalach + oldpeak + ca
+    ## Model 2: target ~ age + sex + cp + trestbps + chol + fbs + restecg + thalach + 
+    ##     exang + oldpeak + slope + ca + thal
+    ##   Resid. Df Resid. Dev Df Deviance Pr(>Chi)  
+    ## 1       208     153.90                       
+    ## 2       197     131.97 11   21.925  0.02496 *
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+#ROC and AUC for the partial model
+library(pROC)
+```
+
+    ## Type 'citation("pROC")' for a citation.
+
+    ## 
+    ## Attaching package: 'pROC'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     cov, smooth, var
+
+``` r
+par(pty="s")
+roc(train_df$target, df_model.part$fitted.values, plot=TRUE, legacy.axes=TRUE,
+    col="Red", print.auc = TRUE, print.auc.x=0.35,
+    xlab="False Positive Rate",
+    ylab="True Positive Rate")
+```
+
+    ## Setting levels: control = 0, case = 1
+
+    ## Setting direction: controls < cases
+
+![](hd_log_reg_rmarkdown_files/figure-gfm/ROC%20and%20AUC%20partial%20model-1.png)<!-- -->
+
+    ## 
+    ## Call:
+    ## roc.default(response = train_df$target, predictor = df_model.part$fitted.values,     plot = TRUE, legacy.axes = TRUE, col = "Red", print.auc = TRUE,     print.auc.x = 0.35, xlab = "False Positive Rate", ylab = "True Positive Rate")
+    ## 
+    ## Data: df_model.part$fitted.values in 99 controls (train_df$target 0) < 118 cases (train_df$target 1).
+    ## Area under the curve: 0.9199
+
+``` r
+#Fiiting the model to test dataset and Confusion Matrix of the fitted model
+df_model_fit <- predict(df_model.part, newdata=test_df, type="response")
+df_model_confmat <- ifelse(df_model_fit >0.5, 1, 0)
+
+library(caret)
+```
+
+    ## Loading required package: lattice
+
+``` r
+confusionMatrix(factor(df_model_confmat), factor(test_df$target), positive=as.character(1))
+```
+
+    ## Confusion Matrix and Statistics
+    ## 
+    ##           Reference
+    ## Prediction  0  1
+    ##          0 31 11
+    ##          1  8 36
+    ##                                           
+    ##                Accuracy : 0.7791          
+    ##                  95% CI : (0.6767, 0.8614)
+    ##     No Information Rate : 0.5465          
+    ##     P-Value [Acc > NIR] : 6.351e-06       
+    ##                                           
+    ##                   Kappa : 0.5572          
+    ##                                           
+    ##  Mcnemar's Test P-Value : 0.6464          
+    ##                                           
+    ##             Sensitivity : 0.7660          
+    ##             Specificity : 0.7949          
+    ##          Pos Pred Value : 0.8182          
+    ##          Neg Pred Value : 0.7381          
+    ##              Prevalence : 0.5465          
+    ##          Detection Rate : 0.4186          
+    ##    Detection Prevalence : 0.5116          
+    ##       Balanced Accuracy : 0.7804          
+    ##                                           
+    ##        'Positive' Class : 1               
+    ## 
