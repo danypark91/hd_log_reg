@@ -385,7 +385,7 @@ in `glm`. The summary of the first model indicates the AIC score of
 171.97 with the 197 degress of freedom. The coefficient gives the
 insight of full model of logistic regression. In the sumamry the right
 most column is the P-value of each coefficient in the model. The more
-they are statistically sigificant, more cdoes appear on the right side.
+they are statistically sigificant, more codes appear on the right side.
 
 ``` r
 #Logistic Regression: full fitting with train dataset
@@ -440,6 +440,15 @@ summary(df_model)
     ## AIC: 171.97
     ## 
     ## Number of Fisher Scoring iterations: 15
+
+The result above inidcates that the variables, `sex`, `cp`, `trestbps`,
+`thalach`, `oldpeak` and `ca`, are statistically significant. The model
+is reduced by fitting only important variables. The summary below is the
+fitted model of only significant variables. The AIC score of 171.89 with
+the degrees of freedom of 206. The reduced model has lower AIC score
+which suggests that it is better fitted than the full model. However,
+before using the reduced model, the ANOVA test is conducted to prove the
+significance of difference.
 
 ``` r
 #create a model with the statistically siginifcant variables only

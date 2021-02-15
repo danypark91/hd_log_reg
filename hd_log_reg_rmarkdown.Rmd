@@ -176,13 +176,14 @@ test_df  <- subset(df, sample==FALSE) #Test dataset
 
 #### 4-1. Fitting the model
 Discovering the statistically siginificant variable is extremely difficult just by the help of data visualization. The `train_df` is applied to the logistic regression. As our response variable consists only two categories, the binomial distribution is chosen as the `family` in `glm`.
-The summary of the first model indicates the AIC score of 171.97 with the 197 degress of freedom. The coefficient gives the insight of full model of logistic regression. In the sumamry the right most column is the P-value of each coefficient in the model. The more they are statistically sigificant, more cdoes appear on the right side. 
+The summary of the first model indicates the AIC score of 171.97 with the 197 degress of freedom. The coefficient gives the insight of full model of logistic regression. In the sumamry the right most column is the P-value of each coefficient in the model. The more they are statistically sigificant, more codes appear on the right side. 
 ```{r Fitting Train_df, echo=TRUE}
 #Logistic Regression: full fitting with train dataset
 df_model <- glm(target~., data=train_df, family=binomial(link="logit"))
 print(df_model$coefficents)
 summary(df_model)
 ```
+The result above inidcates that the variables, `sex`, `cp`, `trestbps`, `thalach`, `oldpeak` and `ca`, are statistically significant. The model is reduced by fitting only important variables. The summary below is the fitted model of only significant variables. The AIC score of 171.89 with the degrees of freedom of 206. The reduced model has lower AIC score which suggests that it is better fitted than the full model. However, before using the reduced model, the ANOVA test is conducted to prove the significance of difference.
 
 ```{r Fitting only significant variables, echo=TRUE}
 #create a model with the statistically siginifcant variables only
