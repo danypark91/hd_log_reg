@@ -493,6 +493,20 @@ print(df_model.part$aic - df_model$aic) #difference of AIC score
 
     ## [1] -0.07491292
 
+The ANOVA test is used to compare the difference between the two
+statistical figures. The Chi-Square test helps to make decisions about
+whether the `df_model.part` differs signifcantly from the `df_model`.
+The p-value of the test is the key to make decision between rejection of
+Null Hypothesis. The lower the p-value, the evidence of difference is
+stronger, hence more likely to reject null hypothesis. In fact, the
+p-value is compared with significance value to make the decision. - H0:
+`df_model.part` = `df_model` - HA: `df_model.part` ≠ `df_model` The test
+result shows the p-value of 0.02496 which is lower compare to the 0.05.
+Based on this result, we can reject null hypothesis and select
+alternative hypothesis. The further steps used reduced model as it is
+proved that the reduced model is statistically more fit, it is used for
+the further steps.
+
 ``` r
 #validate that the reduced model is statistically siginifcant over the full model
 anova(df_model.part, df_model, test="Chisq")
@@ -585,3 +599,26 @@ confusionMatrix(factor(df_model_confmat), factor(test_df$target), positive=as.ch
     ##                                           
     ##        'Positive' Class : 1               
     ## 
+
+``` r
+#ROC and AUC for the fitted model
+library(ROCR)
+df_prediction <- prediction(df_model_fit, test_df$target)
+df_performance <- performance(df_prediction, measure = "tpr", x.measure="fpr")
+plot(df_performance, col = "Red", 
+     main = "ROC Curve",
+     xlab="False Postiive Rate", ylab="True Positive Rate")+
+  abline(a=0,b=1, col= "Grey")
+```
+
+![](hd_log_reg_rmarkdown_files/figure-gfm/ROC%20and%20AUC%20of%20Fitted%20Model-1.png)<!-- -->
+
+    ## integer(0)
+
+``` r
+df_auc <- performance(df_prediction, measure = "auc")
+df_auc <- df_auc@y.values
+print(paste("AUC Score: ", lapply(df_auc,round,4)))
+```
+
+    ## [1] "AUC Score:  0.8696"
