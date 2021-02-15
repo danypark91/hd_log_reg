@@ -358,8 +358,13 @@ regression was studied. Unlike the linear regression, the classification
 method apply accuracy, precision, F1 score and related indicators to
 measure the validty of the model. Splitting the entire dataframe between
 the train and test sets are essential to avoid biased results. The
-`train_df` is initially used to study and determine the appropriate
-model for the dataframe.
+`train_df` is used only to study and determine the appropriate model.
+For this study, the split of dataframe between train and test sets
+conducted with the ratio of 4:1. It is important to ramdomly allocate
+the incidences between the data sets. First `set.seed` will ramdomize
+the incidences in the frame, followed by the division. Once the
+statistical model is discovered and validated, the same model will be
+used to
 
 ``` r
 #Train,Test Split
@@ -370,9 +375,27 @@ train_df <- subset(df, sample==TRUE) #Train dataset
 test_df  <- subset(df, sample==FALSE) #Test dataset
 ```
 
+#### 4-1. Fitting the model
+
+Discovering the statistically siginificant variable is extremely
+difficult just by the help of data visualization. The `train_df` is
+applied to the logistic regression. As our response variable consists
+only two categories, the binomial distribution is chosen as the `family`
+in `glm`. The summary of the first model indicates the AIC score of
+171.97 with the 197 degress of freedom. The coefficient gives the
+insight of full model of logistic regression. In the sumamry the right
+most column is the P-value of each coefficient in the model. The more
+they are statistically sigificant, more cdoes appear on the right side.
+
 ``` r
 #Logistic Regression: full fitting with train dataset
 df_model <- glm(target~., data=train_df, family=binomial(link="logit"))
+print(df_model$coefficents)
+```
+
+    ## NULL
+
+``` r
 summary(df_model)
 ```
 
