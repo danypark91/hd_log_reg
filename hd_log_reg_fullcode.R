@@ -109,6 +109,7 @@ test_df  <- subset(df, sample==FALSE) #Test dataset
 
 #Logistic Regression: full fitting with train dataset
 df_model <- glm(target~., data=train_df, family=binomial(link="logit"))
+df_mdoel$coefficients
 summary(df_model)
 
 #create a model with the statistically siginifcant variables only
