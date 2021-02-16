@@ -515,8 +515,8 @@ Hypothesis. The lower the p-value, the evidence of difference is, hence
 confidently reject the null hypothesis. The p-value is compared with the
 significance value to make the decision.
 
--   H0: `df_model.part` = `df_model`
--   HA: `df_model.part` ≠ `df_model`
+-   H\_0: `df_model.part` = `df_model`
+-   H\_A: `df_model.part` ≠ `df_model`
 
 The test result shows a p-value of 0.02496 which, is lower compare to
 0.05. Based on this result, we can reject the null and select the
@@ -553,6 +553,7 @@ dimensions, ‘actual’ and ‘predicted’, and the cells are determined by
 the number of categories in a response variable. It is an excellent tool
 to present the accuracy of a model as well as Type I and Type II errors.
 The insight and calculations are presented in the image below.
+
 ![Confusion
 Matrix](https://2.bp.blogspot.com/-EvSXDotTOwc/XMfeOGZ-CVI/AAAAAAAAEiE/oePFfvhfOQM11dgRn9FkPxlegCXbgOF4QCLcBGAs/s1600/confusionMatrxiUpdated.jpg)
 
@@ -563,6 +564,7 @@ representation of trade-off between True Positive Rate (also known as
 Sensitivity) versus False Positive Rate (1-Specificity). As the name of
 AUC suggests, it is derived from the plot by calculating the area below
 the curve. Higher the AUC, better predictability of the fitted model.
+
 ![ROC
 Curve](https://ars.els-cdn.com/content/image/3-s2.0-B9780128030141000029-f02-01-9780128030141.jpg)
 
@@ -606,6 +608,18 @@ roc(train_df$target, df_model.part$fitted.values, plot=TRUE, legacy.axes=TRUE,
     ## Data: df_model.part$fitted.values in 99 controls (train_df$target 0) < 118 cases (train_df$target 1).
     ## Area under the curve: 0.9199
 
+Using the reduced model, we can predict the heart disease `target` for
+the `test_df`. The code produces predicted values, based on the
+regression function. The predicted value is then compared with the
+actual `target` from the test dataframe. Based on the summary of
+Confusion Matrix, total of 67 sample patients were accurately predicted.
+Out of 19 false predictions, 8 are Type I error and 11 are Type II
+error. In this study, 8 patients were predicted to have heart disease
+although they didn’t. 11 patients has heart disease but predicted to be
+none. The accuracy of the model is 77.91% with the confidence interval
+of (67.67%, 86.14%). The p-value of accuracy is lower than 0.05, which
+indicates that the confusion matrix is statistically significant.
+
 ``` r
 #Fiiting the model to test dataset and Confusion Matrix of the fitted model
 df_model_fit <- predict(df_model.part, newdata=test_df, type="response")
@@ -648,6 +662,13 @@ confusionMatrix(factor(df_model_confmat), factor(test_df$target), positive=as.ch
     ##        'Positive' Class : 1               
     ## 
 
+Another way to measure the predictability of the model is by deriving
+ROC curve and AUC score. The curve is clearly above the diagonal line.
+It is also close to the blue line, hence it can be considered as the
+accurate model. AUC score for the curve is 0.8696, which is very close
+to 1. As the maximum value of AUC is 1 (which is the perfect
+prediction), the prediction is accurate.
+
 ``` r
 #ROC and AUC for the fitted model
 library(ROCR)
@@ -655,8 +676,12 @@ df_prediction <- prediction(df_model_fit, test_df$target)
 df_performance <- performance(df_prediction, measure = "tpr", x.measure="fpr")
 plot(df_performance, col = "Red", 
      main = "ROC Curve",
-     xlab="False Postiive Rate", ylab="True Positive Rate")+
-  abline(a=0,b=1, col= "Grey")
+     xlab="False Postiive Rate", ylab="True Positive Rate")+ 
+  abline(v=0, h=1, col="Blue")+
+  abline(a=0, b=1, col= "Grey")+
+  plot(df_performance, col = "Red", 
+     main = "ROC Curve",
+     xlab="False Postiive Rate", ylab="True Positive Rate", add=TRUE)
 ```
 
 ![](hd_log_reg_rmarkdown_files/figure-gfm/ROC%20and%20AUC%20of%20Fitted%20Model-1.png)<!-- -->
@@ -670,3 +695,5 @@ print(paste("AUC: ", lapply(df_auc,round,4)))
 ```
 
     ## [1] "AUC:  0.8696"
+
+## 5. Conclusion
