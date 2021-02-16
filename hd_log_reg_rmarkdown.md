@@ -110,11 +110,11 @@ head(df,5)
     ## 4      1
     ## 5      1
 
-The dataset has total of 14 attributes and 303 incidences. Of those,
+The dataset has a total of 14 attributes and 303 incidences. Of those,
 `sex`, `cp`, `fbs`, `restecg`, `exang`, `slope`, `thal` and `target` are
 the characterized as categorical variable. The rest, `age`, `trestbps`,
 `chol`, `thalach` and `oldpeak`, are the continuous variable. However,
-before we proceed, there’s an erronous attribute: `ï..age`. It is
+before we proceed, there’s an erroneous attribute: `ï..age`. It is
 corrected to `age`.
 
 ``` r
@@ -137,12 +137,12 @@ head(df,5)
     ## 5      1
 
 Most of the time, the categorical variable in the dataframe requires to
-be coverted to the factor type in Rstudio. Initially, all the variables
-were categorized as integer. Before analyze the data, categorical
+be converted to the factor type in Rstudio. Initially, all the variables
+were categorized as an integer. Before analyzing the data, categorical
 variables must be converted from int to factor. The code `as.factor` is
-used to successfully convert. As shown below, the result between the
-first `str` and the second run are different. In fact, the second `str`
-overrided the type accordingly.
+used to change the type of attribute. As shown below, the results
+between the first `str` and the second run are different. The second
+`str` overrode the type accordingly.
 
 ``` r
 #check the type of each attribute and change to factor or int
@@ -193,8 +193,8 @@ str(df) #re-run
     ##  $ thal    : Factor w/ 4 levels "0","1","2","3": 2 3 3 3 3 2 3 4 4 3 ...
     ##  $ target  : int  1 1 1 1 1 1 1 1 1 1 ...
 
-One of the most important step in data analysis is dealing with the
-missing data. Usually, the complete dataset doesn’t take place in the
+One of the most crucial steps in data analysis is dealing with the
+missing data. Usually, the complete dataset doesn’t take place at the
 industry level. The code `missmap` is the perfect tool to visualize the
 missing data in each attribute. Luckily, the graph suggests that there
 isn’t any missing data for this dataframe.
@@ -219,9 +219,9 @@ missmap(df, main = "Missing Data vs Observed")
 
 ![](hd_log_reg_rmarkdown_files/figure-gfm/Missmap-1.png)<!-- -->
 
-The final step before analyze the data is checking the ratio of the
-categories in the response variable. Resampling method can resolve the
-high inbalance between the classification. However, below result
+The final step before analyzing the data is checking the ratio of the
+categories in the response variable. The resampling method can resolve
+the high imbalance between the classification. However, the below result
 provides that the imbalance isn’t significant enough to apply
 under/over-sampling algorithm.
 
@@ -236,8 +236,6 @@ count(df,vars="target")
     ## 2      1  165
 
 ## 3. Data Visualization
-
-Before
 
 ``` r
 #Data Visualization
@@ -353,18 +351,17 @@ for(i in 1:5){
 
 ## 4. Logistic Regression
 
-In the beginning of this notebook, the concept of the logistic
-regression was studied. Unlike the linear regression, the classification
-method apply accuracy, precision, F1 score and related indicators to
-measure the validty of the model. Splitting the entire dataframe between
-the train and test sets are essential to avoid biased results. The
-`train_df` is used only to study and determine the appropriate model.
-For this study, the split of dataframe between train and test sets
-conducted with the ratio of 4:1. It is important to ramdomly allocate
-the incidences between the data sets. First `set.seed` will ramdomize
-the incidences in the frame, followed by the division. Once the
-statistical model is discovered and validated, the same model will be
-used to
+At the beginning of this notebook, we studied the concept of logistic
+regression. Unlike the linear regression, the classification method
+applies accuracy, precision, F1 score, and related indicators to measure
+the validity. Splitting the entire data frame between the train and test
+sets is essential to avoid biased results. The `train_df` is used only
+to study and determine the appropriate model. For this study, I split
+the data frame between the train and test sets with the ratio of 4:1. It
+is crucial to randomly allocate the incidences in the data sets. First,
+`set.seed` will randomize the incidences, followed by the division. Once
+the statistical model is discovered and validated, the same model will
+be used to predict the possible patient.
 
 ``` r
 #Train,Test Split
@@ -377,23 +374,30 @@ test_df  <- subset(df, sample==FALSE) #Test dataset
 
 #### 4-1. Fitting the model
 
-Discovering the statistically siginificant variable is extremely
-difficult just by the help of data visualization. The `train_df` is
-applied to the logistic regression. As our response variable consists
-only two categories, the binomial distribution is chosen as the `family`
-in `glm`. The summary of the first model indicates the AIC score of
-171.97 with the 197 degress of freedom. The coefficient gives the
-insight of full model of logistic regression. In the sumamry the right
-most column is the P-value of each coefficient in the model. The more
-they are statistically sigificant, more codes appear on the right side.
+Discovering the statistically significant variable is extremely
+difficult with the help of data visualization. The `train_df` is applied
+to the logistic regression. As our response variable consists of only
+two categories, the binomial distribution is chosen as the `family` in
+`glm`. The summary of the first model indicates the AIC score of 171.97
+with 197 degrees of freedom. The coefficient gives an insight into the
+full model of logistic regression. In the printed summary, the rightmost
+column is the P-value of each coefficient in the model. The more they
+are statistically significant, the more codes appear on the right side.
 
 ``` r
 #Logistic Regression: full fitting with train dataset
 df_model <- glm(target~., data=train_df, family=binomial(link="logit"))
-print(df_model$coefficents)
+exp(coef(df_model))
 ```
 
-    ## NULL
+    ##  (Intercept)          age         sex1          cp1          cp2          cp3 
+    ## 2.222497e+00 1.010313e+00 1.251071e-01 3.285361e+00 9.043645e+00 8.062981e+00 
+    ##     trestbps         chol         fbs1     restecg1     restecg2      thalach 
+    ## 9.766321e-01 9.923362e-01 7.097179e-01 6.795566e-01 1.482794e-06 1.034207e+00 
+    ##       exang1      oldpeak       slope1       slope2           ca        thal1 
+    ## 6.136131e-01 6.087531e-01 3.479431e-01 1.151269e+00 2.283492e-01 9.009512e+00 
+    ##        thal2        thal3 
+    ## 6.728037e+00 1.618208e+00
 
 ``` r
 summary(df_model)
@@ -441,18 +445,27 @@ summary(df_model)
     ## 
     ## Number of Fisher Scoring iterations: 15
 
-The result above inidcates that the variables, `sex`, `cp`, `trestbps`,
-`thalach`, `oldpeak` and `ca`, are statistically significant. The model
-is reduced by fitting only important variables. The summary below is the
-fitted model of only significant variables. The AIC score of 171.89 with
-the degrees of freedom of 206. The reduced model has lower AIC score
-which suggests that it is better fitted than the full model. However,
-before using the reduced model, the ANOVA test is conducted to prove the
-significance of difference.
+The result above indicates that the variables, `sex`, `cp`, `trestbps`,
+`thalach`, `oldpeak`, and `ca`, are statistically significant. I created
+`df_model.part` by fitting only listed variables. The summary below is
+the fitted model of only significant variables: the AIC score of 171.89
+with the degrees of freedom of 206. The reduced model has a lower AIC
+score, which suggests that it is better fitted than the full model. The
+ANOVA test is conducted to prove the difference exists between the
+comprehensive and partial model.
 
 ``` r
 #create a model with the statistically siginifcant variables only
 df_model.part <- glm(target~sex+cp+trestbps+thalach+oldpeak+ca, data=train_df, family=binomial(link="logit"))
+exp(coef(df_model.part))
+```
+
+    ## (Intercept)        sex1         cp1         cp2         cp3    trestbps 
+    ##   0.4415499   0.1261176   5.6280016   8.9356090  13.1413177   0.9775107 
+    ##     thalach     oldpeak          ca 
+    ##   1.0386253   0.4780980   0.3140008
+
+``` r
 summary(df_model.part)
 ```
 
@@ -494,18 +507,17 @@ print(df_model.part$aic - df_model$aic) #difference of AIC score
     ## [1] -0.07491292
 
 The ANOVA test is used to compare the difference between the two
-statistical figures. The Chi-Square test helps to make decisions about
-whether the `df_model.part` differs signifcantly from the `df_model`.
-The p-value of the test is the key to make decision between rejection of
-Null Hypothesis. The lower the p-value, the evidence of difference is
-stronger, hence more likely to reject null hypothesis. In fact, the
-p-value is compared with significance value to make the decision. - H0:
-`df_model.part` = `df_model` - HA: `df_model.part` ≠ `df_model` The test
-result shows the p-value of 0.02496 which is lower compare to the 0.05.
-Based on this result, we can reject null hypothesis and select
-alternative hypothesis. The further steps used reduced model as it is
-proved that the reduced model is statistically more fit, it is used for
-the further steps.
+statistical figures. The Chi-Square test helps determine whether the
+`df_model.part` differs significantly from the `df_model`. The p-value
+of the test is the key to decide between the rejection of the Null
+Hypothesis. The lower the p-value, the evidence of difference is, hence
+confidently reject the null hypothesis. The p-value is compared with the
+significance value to make the decision. \* H0: `df_model.part` =
+`df_model` \* HA: `df_model.part` ≠ `df_model` The test result shows a
+p-value of 0.02496 which, is lower compare to 0.05. Based on this
+result, we can reject the null and select the alternative hypothesis.
+The prediction steps will use the `df_model.part` as it is proved that
+the reduced model is statistically more fit.
 
 ``` r
 #validate that the reduced model is statistically siginifcant over the full model
@@ -522,6 +534,20 @@ anova(df_model.part, df_model, test="Chisq")
     ## 2       197     131.97 11   21.925  0.02496 *
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+#### 4-2. Predictability and Performance Evaluation
+
+The previous step was to fit, check and discover the appropriate
+regression model of the `train_df`. The final step of the logistic
+regression analysis is to apply the model to `test_df` and test the
+predictability. Two most commonly used technics are: Confusion Matrix
+and ROC curves. A confusion matrix is used to describe the performance
+of a classification model. A table layout helps to visualize the
+performance of the model. It contains two dimensions, ‘actual’ and
+‘predicted’, and the cells are determined by the number of categories in
+a response variable. It is an excellent tool to present the accuracy of
+a model as well as Type I and Type II errors. ![Confusion
+Matrix](https://2.bp.blogspot.com/-EvSXDotTOwc/XMfeOGZ-CVI/AAAAAAAAEiE/oePFfvhfOQM11dgRn9FkPxlegCXbgOF4QCLcBGAs/s1600/confusionMatrxiUpdated.jpg)
 
 ``` r
 #ROC and AUC for the partial model
@@ -618,7 +644,7 @@ plot(df_performance, col = "Red",
 ``` r
 df_auc <- performance(df_prediction, measure = "auc")
 df_auc <- df_auc@y.values
-print(paste("AUC Score: ", lapply(df_auc,round,4)))
+print(paste("AUC: ", lapply(df_auc,round,4)))
 ```
 
-    ## [1] "AUC Score:  0.8696"
+    ## [1] "AUC:  0.8696"
