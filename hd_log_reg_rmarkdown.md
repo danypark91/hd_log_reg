@@ -449,9 +449,10 @@ The result above indicates that the variables, `sex`, `cp`, `trestbps`,
 `thalach`, `oldpeak`, and `ca`, are statistically significant. I created
 `df_model.part` by fitting only listed variables. The summary below is
 the fitted model of only significant variables: the AIC score of 171.89
-with the degrees of freedom of 206. The reduced model has a lower AIC
-score, which suggests that it is better fitted than the full model. The
-ANOVA test is conducted to prove the difference exists between the
+with the degrees of freedom of 206. The AIC difference between partial
+and complete model is -0.0749. The reduced model has a lower AIC score,
+which suggests that it is better fitted than the full model. The ANOVA
+test is conducted to prove the difference exists between the
 comprehensive and partial model.
 
 ``` r
@@ -512,12 +513,16 @@ statistical figures. The Chi-Square test helps determine whether the
 of the test is the key to decide between the rejection of the Null
 Hypothesis. The lower the p-value, the evidence of difference is, hence
 confidently reject the null hypothesis. The p-value is compared with the
-significance value to make the decision. \* H0: `df_model.part` =
-`df_model` \* HA: `df_model.part` ≠ `df_model` The test result shows a
-p-value of 0.02496 which, is lower compare to 0.05. Based on this
-result, we can reject the null and select the alternative hypothesis.
-The prediction steps will use the `df_model.part` as it is proved that
-the reduced model is statistically more fit.
+significance value to make the decision.
+
+-   H0: `df_model.part` = `df_model`
+-   HA: `df_model.part` ≠ `df_model`
+
+The test result shows a p-value of 0.02496 which, is lower compare to
+0.05. Based on this result, we can reject the null and select the
+alternative hypothesis. The prediction steps will use the
+`df_model.part` as it is proved that the reduced model is statistically
+more fit.
 
 ``` r
 #validate that the reduced model is statistically siginifcant over the full model
@@ -541,13 +546,30 @@ The previous step was to fit, check and discover the appropriate
 regression model of the `train_df`. The final step of the logistic
 regression analysis is to apply the model to `test_df` and test the
 predictability. Two most commonly used technics are: Confusion Matrix
-and ROC curves. A confusion matrix is used to describe the performance
-of a classification model. A table layout helps to visualize the
-performance of the model. It contains two dimensions, ‘actual’ and
-‘predicted’, and the cells are determined by the number of categories in
-a response variable. It is an excellent tool to present the accuracy of
-a model as well as Type I and Type II errors. ![Confusion
+and Receiver Operating Characteristic Curve. A confusion matrix is used
+to describe the performance of a classification model. A table layout
+helps to visualize the performance of the model. It contains two
+dimensions, ‘actual’ and ‘predicted’, and the cells are determined by
+the number of categories in a response variable. It is an excellent tool
+to present the accuracy of a model as well as Type I and Type II errors.
+The insight and calculations are presented in the image below.
+![Confusion
 Matrix](https://2.bp.blogspot.com/-EvSXDotTOwc/XMfeOGZ-CVI/AAAAAAAAEiE/oePFfvhfOQM11dgRn9FkPxlegCXbgOF4QCLcBGAs/s1600/confusionMatrxiUpdated.jpg)
+
+Another measure of predictability of model are Receiver Operating
+Characteristic(ROC) curve and Area Under the Curve (AUC) Score. The ROC
+measures the performance of a classification model. The plot is a
+representation of trade-off between True Positive Rate (also known as
+Sensitivity) versus False Positive Rate (1-Specificity). As the name of
+AUC suggests, it is derived from the plot by calculating the area below
+the curve. Higher the AUC, better predictability of the fitted model.
+![ROC
+Curve](https://ars.els-cdn.com/content/image/3-s2.0-B9780128030141000029-f02-01-9780128030141.jpg)
+
+The below curve is the sample of the ROC Curve with the AUC of fitted
+model versus the actual data. It is not important to derive the curve
+and score of the fitted model. As the curve is based on the
+predictability, it is wise to use the technic to the `test_df`.
 
 ``` r
 #ROC and AUC for the partial model
