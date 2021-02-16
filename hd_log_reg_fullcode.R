@@ -109,11 +109,12 @@ test_df  <- subset(df, sample==FALSE) #Test dataset
 
 #Logistic Regression: full fitting with train dataset
 df_model <- glm(target~., data=train_df, family=binomial(link="logit"))
-df_mdoel$coefficients
+exp(coef(df_model))
 summary(df_model)
 
 #create a model with the statistically siginifcant variables only
 df_model.part <- glm(target~sex+cp+trestbps+thalach+oldpeak+ca, data=train_df, family=binomial(link="logit"))
+exp(coef(df_model.part))
 summary(df_model.part)
 print(df_model.part$aic - df_model$aic) #difference of AIC score
 
