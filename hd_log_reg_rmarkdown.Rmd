@@ -204,16 +204,16 @@ anova(df_model.part, df_model, test="Chisq")
 ```
 #### 4-2. Predictability and Performance Evaluation
 
-The previous step was to fit, check and discover the appropriate regression model of the `train_df`. The final step of the logistic regression analysis is to apply the model to `test_df` and test the predictability. Two most commonly used technics are: Confusion Matrix and Receiver Operating Characteristic Curve.
-A confusion matrix is used to describe the performance of a classification model. A table layout helps to visualize the performance of the model. It contains two dimensions, 'actual' and 'predicted', and the cells are determined by the number of categories in a response variable. It is an excellent tool to present the accuracy of a model as well as Type I and Type II errors. The insight and calculations are presented in the image below.
+The previous step was to fit, check and discover the appropriate regression model. The final step of the logistic regression analysis is to apply the model to `test_df` and test the predictability. The two most commonly used technics are Confusion Matrix and Receiver Operating Characteristic Curve.
+A confusion matrix is a table used to describe the performance of a classification model. A table layout helps to exhibit the performance of the model. It contains two dimensions, 'actual' and 'predicted', and the cells are determined by the number of categories in a response variable. It is an excellent tool to present the accuracy of a model, Type I and Type II errors. The insight and calculations are presented in the image below.
 
 ![Confusion Matrix](https://2.bp.blogspot.com/-EvSXDotTOwc/XMfeOGZ-CVI/AAAAAAAAEiE/oePFfvhfOQM11dgRn9FkPxlegCXbgOF4QCLcBGAs/s1600/confusionMatrxiUpdated.jpg)
 
-Another measure of predictability of model are Receiver Operating Characteristic(ROC) curve and Area Under the Curve (AUC) Score. The ROC measures the performance of a classification model. The plot is a representation of trade-off between True Positive Rate (also known as Sensitivity) versus False Positive Rate (1-Specificity). As the name of AUC suggests, it is derived from the plot by calculating the area below the curve. Higher the AUC, better predictability of the fitted model. 
+Another measure of predictability of the model is Receiver Operating Characteristic(ROC) curve and Area Under the Curve (AUC) Score. The ROC measures the performance of a classification model. The plot represents the trade-off between True Positive Rate (also known as Sensitivity) versus False Positive Rate (1-Specificity). As the name of AUC suggests, it is derived from the plot by calculating the area below the curve. Higher the AUC, better predictability of the fitted model. 
 
 ![ROC Curve](https://ars.els-cdn.com/content/image/3-s2.0-B9780128030141000029-f02-01-9780128030141.jpg)
 
-The below curve is the sample of the ROC Curve with the AUC of fitted model versus the actual data. It is not important to derive the curve and score of the fitted model. As the curve is based on the predictability, it is wise to use the technic to the `test_df`.
+The below curve is the sample of the ROC Curve with the AUC of the fitted model versus the actual data. It is not crucial to derive the curve and score of the fitted model. As the curve is based on predictability, it is wise to use the technic to the `test_df`.
 ```{r ROC and AUC partial model, echo=TRUE}
 #ROC and AUC for the partial model
 library(pROC)
@@ -224,8 +224,8 @@ roc(train_df$target, df_model.part$fitted.values, plot=TRUE, legacy.axes=TRUE,
     ylab="True Positive Rate")
 ```
 
-Using the reduced model, we can predict the heart disease `target` for the `test_df`. The code produces predicted values, based on the regression function. The predicted value is then compared with the actual `target` from the test dataframe. 
-Based on the summary of Confusion Matrix, total of 67 sample patients were accurately predicted. Out of 19 false predictions, 8 are Type I error and 11 are Type II error. In this study, 8 patients were predicted to have heart disease although they didn't. 11 patients has heart disease but predicted to be none. The accuracy of the model is 77.91% with the confidence interval of (67.67%, 86.14%). The p-value of accuracy is lower than 0.05, which indicates that the confusion matrix is statistically significant. 
+Using the reduced model, we can predict the heart disease `target` for the `test_df`. The code produces predicted values. The prediction is then compared with the actual `target` from the test dataframe. 
+Based on the summary of Confusion Matrix, a total of 67 sample patients were accurately predicted. Out of 19 false predictions, 8 are Type I error and, 11 are Type II errors. Even though eight patients didn't have heart disease, they are falsely diagnosed. Eleven patients have heart disease but are predicted to be none. The accuracy of the model is 77.91% with a confidence interval of (67.67%, 86.14%). The p-value of accuracy is lower than 0.05, which indicates that the confusion matrix is statistically significant. 
 ```{r Confusion Matrix, echo=TRUE}
 #Fiiting the model to test dataset and Confusion Matrix of the fitted model
 df_model_fit <- predict(df_model.part, newdata=test_df, type="response")
@@ -234,7 +234,7 @@ df_model_confmat <- ifelse(df_model_fit >0.5, 1, 0)
 library(caret)
 confusionMatrix(factor(df_model_confmat), factor(test_df$target), positive=as.character(1))
 ```
-Another way to measure the predictability of the model is by deriving ROC curve and AUC score. The curve is clearly above the diagonal line. It is also close to the blue line, hence it can be considered as the accurate model. AUC score for the curve is 0.8696, which is very close to 1. As the maximum value of AUC is 1 (which is the perfect prediction), the prediction is accurate. 
+Another way to measure the predictability of the model is by deriving the ROC curve and AUC score. The graph is clearly above the diagonal line. It is also close to the blue line. Hence it can be considered as an accurate model. AUC score for the curve is 0.8696, which is very close to 1. As the maximum value of AUC is 1 (which is the perfect prediction), the prediction is achieved accurately. 
 ```{r ROC and AUC of Fitted Model, echo=TRUE, fig.height=6, fig.width=6}
 #ROC and AUC for the fitted model
 library(ROCR)
@@ -243,8 +243,8 @@ df_performance <- performance(df_prediction, measure = "tpr", x.measure="fpr")
 plot(df_performance, col = "Red", 
      main = "ROC Curve",
      xlab="False Postiive Rate", ylab="True Positive Rate")+ 
-  abline(v=0, h=1, col="Blue")+
-  abline(a=0, b=1, col= "Grey")+
+  abline(v=0, h=1, col="Blue", lty=2)+
+  abline(a=0, b=1, col= "Grey", lty=3)+
   plot(df_performance, col = "Red", 
      main = "ROC Curve",
      xlab="False Postiive Rate", ylab="True Positive Rate", add=TRUE)
@@ -256,3 +256,12 @@ print(paste("AUC: ", lapply(df_auc,round,4)))
 ```
 
 ## 5. Conclusion
+The logistic regression initially started with the importation of the data from the local device. The dataframe didn't contain any missing data hence not many of cleansing technique was required. However, the type of every attribute is characterized as an integer. To successfully conduct the classification, I changed categorical variables into type factors. The completion of cleansing led to data visualization.
+
+The most crucial step of this study was discovering the regression model and predict patients. First, I split `train` and `test` data sets from the complete dataframe. Of course, the division of incidences was conducted at random. 
+Initially, the regression was fit only by the `train_df`. The summary of the fit suggested that `sex`, `cp`, `trestbps`, `thalach`, `oldpeak` and `ca` are statistically significant. The model was then chosen only significant variables and fitted again. The formula of the regression was:
+
+* **target** = 0.4415 + 0.1261[**sex1**] + 5.6280[**cp1**] + 8.9356[**cp2**] + 13.1413[**cp3**] + 0.9775[**trestbps**] + 1.0386[**thalach**] + 0.4781[**oldpeak**] + 0.3140[**ca**]
+
+The AIC score difference between full and partial model was **-0.07491**. The reduced model produced better result. The ANOVA test follwed to statistically prove that the reduced model was better fit. With the p-value of **0.02496**, I could conclude that the reduced model outperformed the full model.
+The main goal of the study was to predict the heart disease of the patient. I used the two most well-known techniques to check the predictability of the fitted model: the confusion matrix and the ROC curve. The accuracy of the prediction was **77.91%**: out of 86 sample sizes, 67 were predicted correctly. The shape of the ROC curve was close to the blue line with an AUC score of **0.8696**. These results confirm that the predictability of the model is statistically accurate. 
