@@ -143,8 +143,8 @@ df_performance <- performance(df_prediction, measure = "tpr", x.measure="fpr")
 plot(df_performance, col = "Red", 
      main = "ROC Curve",
      xlab="False Postiive Rate", ylab="True Positive Rate")+
-  abline(a=0, b=1, col= "Grey")+
-  abline(v=0, h=1, col= "Blue")+
+  abline(a=0, b=1, col= "Grey", lty=2)+
+  abline(v=0, h=1, col= "Blue", lty=3)+
   plot(df_performance, col = "Red", 
        main = "ROC Curve",
        xlab="False Postiive Rate", ylab="True Positive Rate",add=TRUE)
